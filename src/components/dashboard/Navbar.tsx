@@ -25,14 +25,14 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="hover:bg-neutral-100"
+          className="lg:hidden hover:bg-neutral-100"
           onClick={onMenuClick}
         >
           <Menu className="h-6 w-6" />
         </Button>
 
         <div className="flex-1 flex items-center gap-4 ml-4">
-          <form className="flex-1 max-w-lg">
+          <form className="hidden sm:block flex-1 max-w-lg">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-neutral-500" />
               <Input

@@ -1,41 +1,40 @@
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { Column } from '@/types/task';
-import { TaskCard } from './TaskCard';
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import type { Column } from "@/types/task"
+import { TaskCard } from "./TaskCard"
 
 interface TaskColumnProps {
-  column: Column;
+  column: Column
 }
 
 export function TaskColumn({ column }: TaskColumnProps) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({
-      id: column.id,
-    });
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: column.id,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-  };
+  }
 
   const getBgColor = (columnId: string) => {
     switch (columnId) {
-      case 'todo':
-        return 'bg-[#FFE4E1]';
-      case 'in-progress':
-        return 'bg-[#E0FFFF]';
-      case 'completed':
-        return 'bg-[#98FB98]';
+      case "todo":
+        return "bg-[#FFE4E1]"
+      case "in-progress":
+        return "bg-[#E0FFFF]"
+      case "completed":
+        return "bg-[#98FB98]"
       default:
-        return 'bg-white';
+        return "bg-white"
     }
-  };
+  }
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`w-80 rounded-lg border-2 border-black ${getBgColor(column.id)} p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+      className={`w-full sm:w-80 rounded-lg border-2 border-black ${getBgColor(column.id)} p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
       {...attributes}
       {...listeners}
     >
@@ -51,5 +50,6 @@ export function TaskColumn({ column }: TaskColumnProps) {
         ))}
       </div>
     </div>
-  );
+  )
 }
+

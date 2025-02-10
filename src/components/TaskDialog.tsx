@@ -1,72 +1,56 @@
-import { useState } from 'react';
-import { format } from 'date-fns';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
-import { Task } from '@/types/task';
+import { useState } from "react"
+import { format } from "date-fns"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { CalendarIcon } from "lucide-react"
+import type { Task } from "@/types/task"
 
 interface TaskDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (task: Partial<Task>) => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSubmit: (task: Partial<Task>) => void
 }
 
 export function TaskDialog({ open, onOpenChange, onSubmit }: TaskDialogProps) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState<Task['priority']>('medium');
-  const [dueDate, setDueDate] = useState<Date>(new Date());
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [priority, setPriority] = useState<Task["priority"]>("medium")
+  const [dueDate, setDueDate] = useState<Date>(new Date())
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     onSubmit({
       title,
       description,
       priority,
       dueDate: dueDate.toISOString(),
-      assignedTo: 'user',
-    });
-    onOpenChange(false);
-    resetForm();
-  };
+      assignedTo: "user",
+    })
+    onOpenChange(false)
+    resetForm()
+  }
 
   const resetForm = () => {
-    setTitle('');
-    setDescription('');
-    setPriority('medium');
-    setDueDate(new Date());
-  };
+    setTitle("")
+    setDescription("")
+    setPriority("medium")
+    setDueDate(new Date())
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:max-w-[425px]">
+      <DialogContent className="border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-full">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle className="text-2xl font-black">Create New Task</DialogTitle>
           </DialogHeader>
-          <div className="mt-6 space-y-4">
+          <div className="mt-6 space-y-4 max-h-[60vh] overflow-y-auto pr-2">
             <div className="space-y-2">
               <Label htmlFor="title" className="text-sm font-bold">
                 Title
@@ -96,10 +80,7 @@ export function TaskDialog({ open, onOpenChange, onSubmit }: TaskDialogProps) {
               <Label htmlFor="priority" className="text-sm font-bold">
                 Priority
               </Label>
-              <Select
-                value={priority}
-                onValueChange={(value: Task['priority']) => setPriority(value)}
-              >
+              <Select value={priority} onValueChange={(value: Task["priority"]) => setPriority(value)}>
                 <SelectTrigger className="border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                   <SelectValue placeholder="Select priority" />
                 </SelectTrigger>
@@ -119,7 +100,7 @@ export function TaskDialog({ open, onOpenChange, onSubmit }: TaskDialogProps) {
                     className="w-full justify-start border-2 border-black text-left font-normal shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(dueDate, 'PPP')}
+                    {format(dueDate, "PPP")}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto border-2 border-black p-0">
@@ -144,5 +125,6 @@ export function TaskDialog({ open, onOpenChange, onSubmit }: TaskDialogProps) {
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
+
