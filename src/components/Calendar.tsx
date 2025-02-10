@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { Calendar as CalendarPrimitive } from '@/components/ui/calendar';
 import { Task } from '@/types/task';
@@ -20,8 +20,8 @@ export function Calendar({ tasks }: CalendarProps) {
   };
 
   return (
-    <div className="flex gap-4">
-      <div className="w-fit">
+    <div className="flex flex-col lg:flex-row gap-4">
+      <div className="w-full lg:w-auto">
         <CalendarPrimitive
           mode="single"
           selected={date}
@@ -39,7 +39,7 @@ export function Calendar({ tasks }: CalendarProps) {
         />
       </div>
 
-      <div className="flex-1">
+      <div className="flex-1 w-full lg:max-w-md">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-4">
@@ -54,9 +54,9 @@ export function Calendar({ tasks }: CalendarProps) {
                 {getDayTasks(date).map((task) => (
                   <div
                     key={task.id}
-                    className="flex items-center justify-between p-3 bg-muted rounded-lg"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-muted rounded-lg"
                   >
-                    <div>
+                    <div className="mb-2 sm:mb-0">
                       <h4 className="font-medium">{task.title}</h4>
                       <p className="text-sm text-muted-foreground">
                         {task.description}
@@ -70,6 +70,7 @@ export function Calendar({ tasks }: CalendarProps) {
                           ? 'default'
                           : 'secondary'
                       }
+                      className="self-start sm:self-center mt-2 sm:mt-0"
                     >
                       {task.priority}
                     </Badge>

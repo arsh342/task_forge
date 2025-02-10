@@ -1,13 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-  LayoutDashboard,
-  Calendar as CalendarIcon,
-  MessageSquareText,
-  Users,
-  Settings,
-  HelpCircle,
-} from 'lucide-react';
+import { LayoutDashboard, CalendarIcon, MessageSquareText, Users, Settings, HelpCircle } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -19,7 +12,7 @@ export function Sidebar({ isOpen, currentView, setView }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 z-40 h-screen w-64 border-r-4 border-black bg-white transition-transform duration-300",
+        "fixed left-0 top-0 z-40 h-screen w-64 border-r-4 border-black bg-white transition-transform duration-300 lg:translate-x-0",
         !isOpen && "-translate-x-full"
       )}
     >

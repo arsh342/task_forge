@@ -1,7 +1,9 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+"use client"
+
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -10,132 +12,125 @@ import {
   GithubAuthProvider,
   OAuthProvider,
   sendPasswordResetEmail,
-} from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
-import { Icons } from '@/components/icons';
+} from "firebase/auth"
+import { auth } from "@/lib/firebase"
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { useToast } from "@/components/ui/use-toast"
+import { Icons } from "@/components/icons"
 
 const formSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
-});
+})
 
-type FormData = z.infer<typeof formSchema>;
+type FormData = z.infer<typeof formSchema>
 
 interface AuthFormProps {
-  mode: 'signin' | 'signup';
+  mode: "signin" | "signup"
 }
 
 export function AuthForm({ mode }: AuthFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false)
+  const { toast } = useToast()
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
-  });
+  })
 
   const onSubmit = async (data: FormData) => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
-      if (mode === 'signup') {
-        await createUserWithEmailAndPassword(auth, data.email, data.password);
+      if (mode === "signup") {
+        await createUserWithEmailAndPassword(auth, data.email, data.password)
         toast({
-          title: 'Account created successfully',
-          description: 'Welcome to Task Manager!',
-        });
+          title: "Account created successfully",
+          description: "Welcome to Task Manager!",
+        })
       } else {
-        await signInWithEmailAndPassword(auth, data.email, data.password);
+        await signInWithEmailAndPassword(auth, data.email, data.password)
         toast({
-          title: 'Signed in successfully',
-          description: 'Welcome back!',
-        });
+          title: "Signed in successfully",
+          description: "Welcome back!",
+        })
       }
     } catch (error: any) {
       toast({
-        title: 'Error',
+        title: "Error",
         description: error.message,
-        variant: 'destructive',
-      });
+        variant: "destructive",
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
-  const handleOAuthSignIn = async (provider: 'google' | 'github' | 'microsoft' | 'apple') => {
-    setIsLoading(true);
+  const handleOAuthSignIn = async (provider: "google" | "github" | "microsoft" | "apple") => {
+    setIsLoading(true)
     try {
-      let authProvider;
+      let authProvider
       switch (provider) {
-        case 'google':
-          authProvider = new GoogleAuthProvider();
-          break;
-        case 'github':
-          authProvider = new GithubAuthProvider();
-          break;
-        case 'microsoft':
-          authProvider = new OAuthProvider('microsoft.com');
-          break;
-        case 'apple':
-          authProvider = new OAuthProvider('apple.com');
-          break;
+        case "google":
+          authProvider = new GoogleAuthProvider()
+          break
+        case "github":
+          authProvider = new GithubAuthProvider()
+          break
+        case "microsoft":
+          authProvider = new OAuthProvider("microsoft.com")
+          break
+        case "apple":
+          authProvider = new OAuthProvider("apple.com")
+          break
         default:
-          throw new Error('Invalid provider');
+          throw new Error("Invalid provider")
       }
-      await signInWithPopup(auth, authProvider);
+      await signInWithPopup(auth, authProvider)
       toast({
-        title: 'Signed in successfully',
-        description: 'Welcome to Task Manager!',
-      });
+        title: "Signed in successfully",
+        description: "Welcome to Task Manager!",
+      })
     } catch (error: any) {
       toast({
-        title: 'Error',
+        title: "Error",
         description: error.message,
-        variant: 'destructive',
-      });
+        variant: "destructive",
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleForgotPassword = async () => {
-    const email = form.getValues('email');
+    const email = form.getValues("email")
     if (!email) {
       toast({
-        title: 'Error',
-        description: 'Please enter your email address',
-        variant: 'destructive',
-      });
-      return;
+        title: "Error",
+        description: "Please enter your email address",
+        variant: "destructive",
+      })
+      return
     }
 
     try {
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(auth, email)
       toast({
-        title: 'Password reset email sent',
-        description: 'Please check your email to reset your password',
-      });
+        title: "Password reset email sent",
+        description: "Please check your email to reset your password",
+      })
     } catch (error: any) {
       toast({
-        title: 'Error',
+        title: "Error",
         description: error.message,
-        variant: 'destructive',
-      });
+        variant: "destructive",
+      })
     }
-  };
+  }
 
   return (
     <div className="space-y-6">
@@ -148,7 +143,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="email@example.com" {...field} />
+                  <Input placeholder="email@example.com" {...field} className="neubrutalism-sm" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -161,25 +156,21 @@ export function AuthForm({ mode }: AuthFormProps) {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••" {...field} />
+                  <Input type="password" placeholder="••••••" {...field} className="neubrutalism-sm" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full neubrutalism neubrutalism-hover" disabled={isLoading}>
             {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
-            {mode === 'signin' ? 'Sign In' : 'Sign Up'}
+            {mode === "signin" ? "Sign In" : "Sign Up"}
           </Button>
         </form>
       </Form>
 
-      {mode === 'signin' && (
-        <Button
-          variant="link"
-          className="px-0 font-normal"
-          onClick={handleForgotPassword}
-        >
+      {mode === "signin" && (
+        <Button variant="link" className="px-0 font-normal" onClick={handleForgotPassword}>
           Forgot password?
         </Button>
       )}
@@ -189,46 +180,49 @@ export function AuthForm({ mode }: AuthFormProps) {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
+          <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <Button
           variant="outline"
-          onClick={() => handleOAuthSignIn('google')}
+          onClick={() => handleOAuthSignIn("google")}
           disabled={isLoading}
+          className="neubrutalism-sm neubrutalism-hover"
         >
           <Icons.google className="mr-2 h-4 w-4" />
           Google
         </Button>
         <Button
           variant="outline"
-          onClick={() => handleOAuthSignIn('github')}
+          onClick={() => handleOAuthSignIn("github")}
           disabled={isLoading}
+          className="neubrutalism-sm neubrutalism-hover"
         >
           <Icons.gitHub className="mr-2 h-4 w-4" />
           GitHub
         </Button>
         <Button
           variant="outline"
-          onClick={() => handleOAuthSignIn('microsoft')}
+          onClick={() => handleOAuthSignIn("microsoft")}
           disabled={isLoading}
+          className="neubrutalism-sm neubrutalism-hover"
         >
           <Icons.microsoft className="mr-2 h-4 w-4" />
           Microsoft
         </Button>
         <Button
           variant="outline"
-          onClick={() => handleOAuthSignIn('apple')}
+          onClick={() => handleOAuthSignIn("apple")}
           disabled={isLoading}
+          className="neubrutalism-sm neubrutalism-hover"
         >
           <Icons.apple className="mr-2 h-4 w-4" />
           Apple
         </Button>
       </div>
     </div>
-  );
+  )
 }
+
