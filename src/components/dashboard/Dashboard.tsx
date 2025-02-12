@@ -4,9 +4,9 @@ import { Navbar } from './Navbar';
 import { TaskBoard } from '../TaskBoard';
 import { Calendar } from '../Calendar';
 import { ChatBot } from '../ChatBot';
-import { Settings } from '@/pages/settings';
-import { Teams } from '@/pages/teams';
-import { Help } from '@/pages/help';
+import { Settings } from './Settings';
+import { Teams } from './Teams';
+import { Help } from './Help';
 import { cn } from '@/lib/utils';
 
 type View = 'board' | 'calendar' | 'assistant' | 'settings' | 'teams' | 'help';
