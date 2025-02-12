@@ -70,21 +70,21 @@ export function Sidebar({ isOpen, currentView, setView }: SidebarProps) {
           <h2 className="mb-2 px-4 text-lg font-semibold">Settings</h2>
           <div className="space-y-2">
             <Link
-              href="/teams"
+              href="/Teams"
               className="flex w-full items-center p-2 text-lg font-semibold border-2 border-transparent hover:border-black hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all rounded-lg"
             >
               <Users className="mr-2 h-5 w-5" />
               Team
             </Link>
             <Link
-              href="/settings"
+              href="/Settings"
               className="flex w-full items-center p-2 text-lg font-semibold border-2 border-transparent hover:border-black hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all rounded-lg"
             >
               <Settings className="mr-2 h-5 w-5" />
               Settings
             </Link>
             <Link
-              href="/help"
+              href="/Help"
               className="flex w-full items-center p-2 text-lg font-semibold border-2 border-transparent hover:border-black hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all rounded-lg"
             >
               <HelpCircle className="mr-2 h-5 w-5" />

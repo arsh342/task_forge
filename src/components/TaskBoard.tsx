@@ -33,6 +33,18 @@ export function TaskBoard() {
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const activeTaskRef = useRef<Task | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Add resize listener to detect mobile breakpoint
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -131,14 +143,12 @@ export function TaskBoard() {
     const task = activeTaskRef.current;
     const currentColumnIndex = columns.findIndex((col) => col.id === task.status);
 
-    if (Math.abs(deltaX) > 100) { // Minimum swipe distance
+    if (Math.abs(deltaX) > 100) {
       try {
         let newStatus: string;
         if (deltaX > 0 && currentColumnIndex > 0) {
-          // Swipe right
           newStatus = columns[currentColumnIndex - 1].id;
         } else if (deltaX < 0 && currentColumnIndex < columns.length - 1) {
-          // Swipe left
           newStatus = columns[currentColumnIndex + 1].id;
         } else {
           return;
@@ -200,34 +210,36 @@ export function TaskBoard() {
   };
 
   return (
-    <div className="h-full">
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-3xl font-black">Task Board</h2>
+    <div className="h-full w-full">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-2xl sm:text-3xl font-black">Task Board</h2>
         <Button
           onClick={() => setIsTaskDialogOpen(true)}
-          className="border-2 border-black bg-[#FFD700] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-[0px] active:translate-y-[0px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+          className="w-full sm:w-auto border-2 border-black bg-[#FFD700] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-[0px] active:translate-y-[0px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
         >
           <Plus className="mr-2 h-4 w-4" />
           Add Task
         </Button>
       </div>
 
-      <div className="overflow-x-auto pb-4">
+      <div className="w-full">
         <DndContext
           sensors={sensors}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex gap-6 min-w-[768px]">
+          <div className={`${isMobile ? 'flex flex-col gap-6' : 'flex flex-row gap-6 overflow-x-auto pb-4'}`}>
             {columns.map((column) => (
-              <SortableContext key={column.id} items={column.tasks}>
-                <TaskColumn
-                  column={column}
-                  onTouchStart={handleTouchStart}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
-                />
-              </SortableContext>
+              <div key={column.id} className={`${isMobile ? 'w-full' : 'w-80 flex-shrink-0'}`}>
+                <SortableContext items={column.tasks}>
+                  <TaskColumn
+                    column={column}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                  />
+                </SortableContext>
+              </div>
             ))}
           </div>
           <DragOverlay>
