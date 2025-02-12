@@ -1,30 +1,57 @@
-import { useState } from "react"
+"use client"
+
+import { useState, useEffect, useRef } from "react"
 import type { Task } from "@/types/task"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { generateTaskSuggestions } from "@/lib/gemini"
+import { generateStreamingResponse } from "@/lib/gemini"
 import { Send } from "lucide-react"
-
-interface ChatBotProps {
-  tasks: Task[]
-}
+import { collection, query, where, onSnapshot } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import { useAuth } from "@/hooks/useAuth"
 
 interface Message {
   role: "user" | "assistant"
   content: string
 }
 
-export function ChatBot({ tasks }: ChatBotProps) {
+export function ChatBot() {
+  const { user } = useAuth()
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hello! I can help you manage your tasks more effectively. What would you like to know?",
+      content:
+        "Hello! I can help you manage your tasks and answer any questions you have. What would you like to know?",
     },
   ])
+  const [tasks, setTasks] = useState<Task[]>([])
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!user) return
+
+    const q = query(collection(db, "tasks"), where("createdBy", "==", user.uid))
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const tasks = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Task[]
+      setTasks(tasks)
+    })
+
+    return () => unsubscribe()
+  }, [user])
+
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
+    }
+  }, [scrollAreaRef]) //Fixed unnecessary dependency
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,19 +63,50 @@ export function ChatBot({ tasks }: ChatBotProps) {
     setLoading(true)
 
     try {
+      const taskSummary = tasks.map((task) => ({
+        title: task.title,
+        status: task.status,
+        priority: task.priority,
+        dueDate: new Date(task.dueDate).toLocaleDateString(),
+        description: task.description,
+      }))
+
       const prompt = `
         Context: User has ${tasks.length} tasks.
-        Task Summary:
-        ${tasks.map((task) => `- ${task.title} (${task.status}, ${task.priority})`).join("\n")}
+        Task Details:
+        ${JSON.stringify(taskSummary, null, 2)}
 
         User Question: ${userMessage}
 
-        Please provide a helpful response based on the tasks and the user's question.
-        Focus on practical advice and actionable insights.
+        Instructions:
+        1. If the question is about tasks, analyze the task data and provide specific insights
+        2. If it's a general question, provide a helpful response based on your knowledge
+        3. Format the response in a clear, readable way without using markdown or special formatting
+        4. For task analysis, consider:
+           - Task priorities and deadlines
+           - Current task status
+           - Workload balance
+           - Time management suggestions
+        5. Keep responses concise but informative
+        6. Use simple formatting like new lines for readability
+        7. Provide a natural, conversational response that directly addresses the user's question
+
+        Please respond in a clear, easy-to-read format without any special characters or markdown.
       `
 
-      const response = await generateTaskSuggestions(prompt)
-      setMessages((prev) => [...prev, { role: "assistant", content: response }])
+      setMessages((prev) => [...prev, { role: "assistant", content: "" }])
+
+      const stream = await generateStreamingResponse(prompt)
+      let fullResponse = ""
+
+      for await (const chunk of stream) {
+        fullResponse += chunk
+        setMessages((prev) => {
+          const newMessages = [...prev]
+          newMessages[newMessages.length - 1].content = fullResponse
+          return newMessages
+        })
+      }
     } catch (error) {
       console.error("Error generating response:", error)
       setMessages((prev) => [
@@ -64,38 +122,46 @@ export function ChatBot({ tasks }: ChatBotProps) {
   }
 
   return (
-    <Card className="h-[600px] lg:h-[calc(100vh-2rem)] flex flex-col">
+    <Card className="h-[600px] flex flex-col border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
       <CardContent className="flex-1 p-4 flex flex-col">
-        <ScrollArea className="flex-1 pr-4 mb-4">
+        <ScrollArea className="flex-1 pr-4" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.map((message, index) => (
-              <div key={index} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} mb-2`}>
+              <div key={index} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`max-w-[80%] rounded-lg p-3 ${
-                    message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
+                  className={`max-w-[80%] rounded-lg p-3 border-2 border-black ${
+                    message.role === "user"
+                      ? "bg-[#FFD700] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                      : "bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                   }`}
                 >
-                  {message.content}
+                  <div className="whitespace-pre-wrap">{message.content}</div>
                 </div>
               </div>
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="max-w-[80%] rounded-lg p-3 bg-muted">Thinking...</div>
+                <div className="max-w-[80%] rounded-lg p-3 border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  Thinking...
+                </div>
               </div>
             )}
           </div>
         </ScrollArea>
 
-        <form onSubmit={handleSubmit} className="flex gap-2 mt-auto">
+        <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask me anything about your tasks..."
             disabled={loading}
-            className="flex-1"
+            className="border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           />
-          <Button type="submit" disabled={loading} className="shrink-0">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="border-2 border-black bg-[#4CAF50] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          >
             <Send className="h-4 w-4" />
           </Button>
         </form>
