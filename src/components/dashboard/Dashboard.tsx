@@ -5,8 +5,8 @@ import { TaskBoard } from '../TaskBoard';
 import { Calendar } from '../Calendar';
 import { ChatBot } from '../ChatBot';
 import { Settings } from '@/pages/settings';
-import { Teams } from '@/pages/Teams';
-import { Help } from '@/pages/Help';
+import { Teams } from '@/pages/teams';
+import { Help } from '@/pages/help';
 import { cn } from '@/lib/utils';
 
 type View = 'board' | 'calendar' | 'assistant' | 'settings' | 'teams' | 'help';
