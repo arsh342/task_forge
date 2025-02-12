@@ -4,7 +4,9 @@ export interface Task {
   description: string;
   status: 'todo' | 'in-progress' | 'completed';
   priority: 'low' | 'medium' | 'high';
+  startTime: string;
   dueDate: string;
+  dueTime: string;
   assignedTo: string;
   createdBy: string;
   createdAt: string;

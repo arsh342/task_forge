@@ -1,4 +1,4 @@
-import { Menu, Bell, Search, Settings } from 'lucide-react';
+import { Menu, Bell, Search, Settings, Users, HelpCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Link } from '@/components/ui/link';
 
 interface NavbarProps {
   onMenuClick: () => void;
@@ -25,14 +26,14 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden hover:bg-neutral-100"
+          className="hover:bg-neutral-100"
           onClick={onMenuClick}
         >
           <Menu className="h-6 w-6" />
         </Button>
 
         <div className="flex-1 flex items-center gap-4 ml-4">
-          <form className="hidden sm:block flex-1 max-w-lg">
+          <form className="flex-1 max-w-lg">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-neutral-500" />
               <Input
@@ -53,13 +54,26 @@ export function Navbar({ onMenuClick }: NavbarProps) {
             <span className="absolute top-2 right-2 h-2 w-2 bg-red-600 rounded-full" />
           </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hover:bg-neutral-100"
+          <Link
+            href="/teams"
+            className="hover:bg-neutral-100 p-2 rounded-lg"
+          >
+            <Users className="h-5 w-5" />
+          </Link>
+
+          <Link
+            href="/settings"
+            className="hover:bg-neutral-100 p-2 rounded-lg"
           >
             <Settings className="h-5 w-5" />
-          </Button>
+          </Link>
+
+          <Link
+            href="/help"
+            className="hover:bg-neutral-100 p-2 rounded-lg"
+          >
+            <HelpCircle className="h-5 w-5" />
+          </Link>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
