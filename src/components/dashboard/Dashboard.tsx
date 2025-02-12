@@ -20,9 +20,9 @@ export function Dashboard() {
       case 'board':
         return <TaskBoard />;
       case 'calendar':
-        return <Calendar tasks={[]} />;
+        return <Calendar />;
       case 'assistant':
-        return <ChatBot tasks={[]} />;
+        return <ChatBot />;
       case 'settings':
         return <Settings />;
       case 'teams':

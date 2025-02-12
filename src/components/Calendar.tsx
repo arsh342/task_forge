@@ -33,8 +33,8 @@ export function Calendar() {
       setTasks(tasks)
 
       // Check for upcoming tasks
-      const today = new Date()
-      const tomorrow = addDays(today, 1)
+      // const today = new Date()
+      // const tomorrow = addDays(today, 1)
 
       tasks.forEach((task) => {
         const dueDate = new Date(task.dueDate)
@@ -119,7 +119,7 @@ export function Calendar() {
             ))}
 
             {/* Calendar Days */}
-            {daysInMonth.map((day, index) => {
+            {daysInMonth.map((day) => {
               const dayTasks = getDayTasks(day)
               const isSelected = format(selectedDate, "yyyy-MM-dd") === format(day, "yyyy-MM-dd")
               const isCurrentDay = isToday(day)

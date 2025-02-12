@@ -9,7 +9,7 @@ import {
   useSensors,
   TouchSensor,
 } from '@dnd-kit/core';
-import { SortableContext, arrayMove } from '@dnd-kit/sortable';
+import { SortableContext } from '@dnd-kit/sortable';
 import { collection, onSnapshot, query, where, addDoc, updateDoc, doc } from 'firebase/firestore';
 import { useAuth } from '@/hooks/useAuth';
 import { db } from '@/lib/firebase';
