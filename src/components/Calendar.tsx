@@ -2,9 +2,21 @@
 
 import { useState, useEffect } from "react"
 import { CalendarIcon, Trash2, Bell, ChevronLeft, ChevronRight } from "lucide-react"
-import { format, isToday, isTomorrow, addDays, isPast, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns"
+import {
+  format,
+  isToday,
+  isTomorrow,
+  addDays,
+  isPast,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  startOfWeek,
+  endOfWeek,
+} from "date-fns"
 import type { Task } from "@/types/task"
-import { Card } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { doc, deleteDoc, collection, query, where, onSnapshot } from "firebase/firestore"
@@ -52,10 +64,6 @@ export function Calendar() {
     return () => unsubscribe()
   }, [user, toast])
 
-  const getDayTasks = (day: Date) => {
-    return tasks.filter((task) => format(new Date(task.dueDate), "yyyy-MM-dd") === format(day, "yyyy-MM-dd"))
-  }
-
   const handleDeleteTask = async (taskId: string) => {
     try {
       await deleteDoc(doc(db, "tasks", taskId))
@@ -73,9 +81,13 @@ export function Calendar() {
     }
   }
 
+  const getDayTasks = (day: Date) => {
+    return tasks.filter((task) => format(new Date(task.dueDate), "yyyy-MM-dd") === format(day, "yyyy-MM-dd"))
+  }
+
   const getDaysInMonth = () => {
-    const start = startOfMonth(currentMonth)
-    const end = endOfMonth(currentMonth)
+    const start = startOfWeek(startOfMonth(currentMonth))
+    const end = endOfWeek(endOfMonth(currentMonth))
     return eachDayOfInterval({ start, end })
   }
 
@@ -85,7 +97,7 @@ export function Calendar() {
   return (
     <div className="container mx-auto p-4">
       <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <div className="p-6">
+        <CardContent className="p-6">
           {/* Calendar Header */}
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">{format(currentMonth, "MMMM yyyy")}</h2>
@@ -93,7 +105,7 @@ export function Calendar() {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => setCurrentMonth((prev) => addDays(prev, -30))}
+                onClick={() => setCurrentMonth((prevMonth) => addDays(prevMonth, -30))}
                 className="border-2 border-black"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -101,7 +113,7 @@ export function Calendar() {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => setCurrentMonth((prev) => addDays(prev, 30))}
+                onClick={() => setCurrentMonth((prevMonth) => addDays(prevMonth, 30))}
                 className="border-2 border-black"
               >
                 <ChevronRight className="h-4 w-4" />
@@ -110,7 +122,7 @@ export function Calendar() {
           </div>
 
           {/* Calendar Grid */}
-          <div className="grid grid-cols-7 gap-4">
+          <div className="grid grid-cols-7 gap-1">
             {/* Day Headers */}
             {days.map((day) => (
               <div key={day} className="text-center font-semibold py-2">
@@ -122,28 +134,32 @@ export function Calendar() {
             {daysInMonth.map((day) => {
               const dayTasks = getDayTasks(day)
               const isSelected = format(selectedDate, "yyyy-MM-dd") === format(day, "yyyy-MM-dd")
+              const isCurrentMonth = isSameMonth(day, currentMonth)
               const isCurrentDay = isToday(day)
 
               return (
                 <div
                   key={day.toString()}
                   className={cn(
-                    "min-h-[100px] p-2 border-2 rounded-lg transition-all cursor-pointer hover:border-primary",
+                    "min-h-[100px] p-1 border rounded-lg transition-all cursor-pointer",
                     isSelected ? "border-primary bg-primary/10" : "border-gray-200",
                     isCurrentDay && "bg-accent/20",
+                    !isCurrentMonth && "opacity-50",
                   )}
                   onClick={() => setSelectedDate(day)}
                 >
                   <div className="flex justify-between items-start">
-                    <span className={cn("font-semibold", isCurrentDay && "text-primary")}>{format(day, "d")}</span>
+                    <span className={cn("font-semibold text-sm", isCurrentDay && "text-primary")}>
+                      {format(day, "d")}
+                    </span>
                     {dayTasks.length > 0 && (
-                      <Badge variant="secondary" className="ml-1">
+                      <Badge variant="secondary" className="text-xs">
                         {dayTasks.length}
                       </Badge>
                     )}
                   </div>
-                  <div className="mt-2 space-y-1">
-                    {dayTasks.slice(0, 2).map((task) => (
+                  <div className="mt-1 space-y-1">
+                    {dayTasks.slice(0, 3).map((task) => (
                       <div
                         key={task.id}
                         className={cn(
@@ -158,7 +174,7 @@ export function Calendar() {
                         {task.title}
                       </div>
                     ))}
-                    {dayTasks.length > 2 && <div className="text-xs text-gray-500">+{dayTasks.length - 2} more</div>}
+                    {dayTasks.length > 3 && <div className="text-xs text-gray-500">+{dayTasks.length - 3} more</div>}
                   </div>
                 </div>
               )
@@ -191,6 +207,11 @@ export function Calendar() {
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground">{task.description}</p>
+                      <div className="flex items-center gap-2 text-sm mt-1">
+                        <span className="text-green-600">{task.startTime}</span>
+                        <span>-</span>
+                        <span className="text-red-600">{task.dueTime}</span>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge
@@ -222,7 +243,7 @@ export function Calendar() {
               </div>
             </div>
           )}
-        </div>
+        </CardContent>
       </Card>
     </div>
   )

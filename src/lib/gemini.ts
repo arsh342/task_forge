@@ -1,28 +1,30 @@
-import { generateText, streamText } from "ai"
-import { openai } from "@ai-sdk/openai"
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
-export async function generateTaskSuggestions(prompt: string): Promise<string> {
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
+
+export async function generateTaskSuggestions(prompt: string) {
   try {
-    const { text } = await generateText({
-      model: openai("gpt-4o"),
-      prompt: prompt,
-    })
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" })
 
-    return text
+    const result = await model.generateContent(prompt)
+    const response = await result.response
+    return response.text()
   } catch (error) {
-    console.error("Error generating task suggestions:", error)
-    return "Failed to generate task suggestions. Please try again."
+    console.error("Error generating response:", error)
+    return "I apologize, but I encountered an error. Please try again."
   }
 }
 
-export async function generateStreamingResponse(prompt: string) {
+export async function* generateStreamingResponse(prompt: string) {
   try {
-    const stream = await streamText({
-      model: openai("gpt-4o"),
-      prompt: prompt,
-    })
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" })
 
-    return stream.textStream
+    const result = await model.generateContentStream(prompt)
+
+    for await (const chunk of result.stream) {
+      const chunkText = chunk.text()
+      yield chunkText
+    }
   } catch (error) {
     console.error("Error generating streaming response:", error)
     throw error

@@ -4,9 +4,9 @@ import { Navbar } from './Navbar';
 import { TaskBoard } from '../TaskBoard';
 import { Calendar } from '../Calendar';
 import { ChatBot } from '../ChatBot';
-import { Settings } from './Settings';
-import { Teams } from './Teams';
-import { Help } from './Help';
+import { Settings } from '@/pages/Settings';
+import { Teams } from '@/pages/Teams';
+import { Help } from '@/pages/Help';
 import { cn } from '@/lib/utils';
 
 type View = 'board' | 'calendar' | 'assistant' | 'settings' | 'teams' | 'help';
@@ -41,10 +41,12 @@ export function Dashboard() {
       <div className="flex-1 flex flex-col">
         <Navbar onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
         
-        <main className={cn(
-          "flex-1 overflow-y-auto p-8 transition-all duration-300",
-          isSidebarOpen ? "ml-64" : "ml-0"
-        )}>
+        <main 
+          className={cn(
+            "flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 transition-all duration-300",
+            isSidebarOpen ? "md:ml-64" : "ml-0"
+          )}
+        >
           {renderView()}
         </main>
       </div>
