@@ -21,7 +21,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
   const { user, signOut } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 border-b-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+    <header className="sticky top-0 z-50 glass border-b-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
       <div className="flex h-16 items-center px-4 gap-4">
         <Button
           variant="ghost"
@@ -38,7 +38,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-neutral-500" />
               <Input
                 placeholder="Search tasks..."
-                className="pl-8 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                className="pl-8 neubrutalism-sm neubrutalism-hover"
               />
             </div>
           </form>
@@ -51,26 +51,26 @@ export function Navbar({ onMenuClick }: NavbarProps) {
             className="hover:bg-neutral-100 relative"
           >
             <Bell className="h-5 w-5" />
-            <span className="absolute top-2 right-2 h-2 w-2 bg-red-600 rounded-full" />
+            <span className="absolute top-2 right-2 h-2 w-2 bg-red-600 rounded-full animate-pulse" />
           </Button>
 
           <Link
             href="/teams"
-            className="hover:bg-neutral-100 p-2 rounded-lg"
+            className="hover:bg-neutral-100 p-2 rounded-lg transition-colors"
           >
             <Users className="h-5 w-5" />
           </Link>
 
           <Link
             href="/settings"
-            className="hover:bg-neutral-100 p-2 rounded-lg"
+            className="hover:bg-neutral-100 p-2 rounded-lg transition-colors"
           >
             <Settings className="h-5 w-5" />
           </Link>
 
           <Link
             href="/help"
-            className="hover:bg-neutral-100 p-2 rounded-lg"
+            className="hover:bg-neutral-100 p-2 rounded-lg transition-colors"
           >
             <HelpCircle className="h-5 w-5" />
           </Link>
@@ -79,7 +79,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="relative h-9 w-9 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                className="relative h-9 w-9 rounded-full neubrutalism-sm"
               >
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={user?.photoURL || undefined} />
@@ -90,15 +90,15 @@ export function Navbar({ onMenuClick }: NavbarProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-56 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+              className="w-56 neubrutalism"
               align="end"
             >
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">Settings</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut}>
+              <DropdownMenuItem onClick={signOut} className="cursor-pointer text-red-600">
                 Sign out
               </DropdownMenuItem>
             </DropdownMenuContent>

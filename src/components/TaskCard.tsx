@@ -33,11 +33,11 @@ export function TaskCard({ task }: TaskCardProps) {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
-        return 'bg-[#FF6B6B] hover:bg-[#FF5252]';
+        return 'priority-high';
       case 'medium':
-        return 'bg-[#FFD93D] hover:bg-[#FFC107]';
+        return 'priority-medium';
       case 'low':
-        return 'bg-[#4ADE80] hover:bg-[#22C55E]';
+        return 'priority-low';
       default:
         return 'bg-gray-200 hover:bg-gray-300';
     }
@@ -65,9 +65,9 @@ export function TaskCard({ task }: TaskCardProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`rounded-lg border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] ${
+      className={`neubrutalism card-hover ${
         isDragging ? 'opacity-50' : ''
-      } cursor-grab active:cursor-grabbing`}
+      } cursor-grab active:cursor-grabbing bg-white p-4`}
       {...attributes}
       {...listeners}
     >
@@ -102,14 +102,14 @@ export function TaskCard({ task }: TaskCardProps) {
       </div>
 
       <div className="flex items-center justify-between">
-        <Avatar className="h-8 w-8 border-2 border-black">
+        <Avatar className="h-8 w-8 neubrutalism-sm">
           <AvatarImage src={`https://avatar.vercel.sh/${task.assignedTo}`} />
           <AvatarFallback className="border-2 border-black">
             {task.assignedTo.substring(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <Badge
-          className={`border-2 border-black font-bold ${getPriorityColor(
+          className={`neubrutalism-sm font-bold ${getPriorityColor(
             task.priority
           )}`}
         >

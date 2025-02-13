@@ -51,7 +51,7 @@ export function ChatBot() {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
     }
-  }, [scrollAreaRef]) //Fixed unnecessary dependency
+  }, [scrollAreaRef.current]) //Fixed unnecessary dependency
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -67,6 +67,8 @@ export function ChatBot() {
         title: task.title,
         status: task.status,
         priority: task.priority,
+        startTime: task.startTime,
+        dueTime: task.dueTime,
         dueDate: new Date(task.dueDate).toLocaleDateString(),
         description: task.description,
       }))
@@ -85,7 +87,6 @@ export function ChatBot() {
         4. For task analysis, consider:
            - Task priorities and deadlines
            - Current task status
-           - Workload balance
            - Time management suggestions
         5. Keep responses concise but informative
         6. Use simple formatting like new lines for readability
@@ -96,7 +97,7 @@ export function ChatBot() {
 
       setMessages((prev) => [...prev, { role: "assistant", content: "" }])
 
-      const stream = await generateStreamingResponse(prompt)
+      const stream = generateStreamingResponse(prompt)
       let fullResponse = ""
 
       for await (const chunk of stream) {
@@ -122,27 +123,31 @@ export function ChatBot() {
   }
 
   return (
-    <Card className="h-[600px] flex flex-col border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+    <Card className="h-[calc(100vh-12rem)] flex flex-col border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mx-auto max-w-3xl">
       <CardContent className="flex-1 p-4 flex flex-col">
         <ScrollArea className="flex-1 pr-4" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.map((message, index) => (
               <div key={index} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`max-w-[80%] rounded-lg p-3 border-2 border-black ${
+                  className={`max-w-[85%] sm:max-w-[80%] rounded-lg p-3 border-2 border-black ${
                     message.role === "user"
                       ? "bg-[#FFD700] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                       : "bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                   }`}
                 >
-                  <div className="whitespace-pre-wrap">{message.content}</div>
+                  <div className="whitespace-pre-wrap break-words">{message.content}</div>
                 </div>
               </div>
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="max-w-[80%] rounded-lg p-3 border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                  Thinking...
+                <div className="max-w-[85%] sm:max-w-[80%] rounded-lg p-3 border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-black rounded-full animate-bounce" />
+                    <div className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.2s]" />
+                    <div className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.4s]" />
+                  </div>
                 </div>
               </div>
             )}
@@ -153,7 +158,7 @@ export function ChatBot() {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask me anything about your tasks..."
+            placeholder="Ask me anything..."
             disabled={loading}
             className="border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           />
