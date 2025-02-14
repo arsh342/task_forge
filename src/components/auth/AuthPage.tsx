@@ -1,30 +1,32 @@
 import { useState } from "react"
+import { Button } from "../ui/button"
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card"
 import { AuthForm } from "./AuthForm"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function AuthPage() {
   const [mode, setMode] = useState<"signin" | "signup">("signin")
 
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
-      <Card className="w-[400px] max-w-[95vw] neubrutalism">
+    <div className="min-h-screen flex items-center justify-center px-4 py-6 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-[400px] mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl font-black">{mode === "signin" ? "Sign In" : "Create Account"}</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl font-black text-center">
+            {mode === "signin" ? "Sign In" : "Create Account"}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <AuthForm mode={mode} />
           <div className="mt-4 text-center text-sm">
             {mode === "signin" ? (
-              <div>
-                Don't have an account?{" "}
+              <div className="space-x-1">
+                <span>Don't have an account?</span>
                 <Button variant="link" className="px-0" onClick={() => setMode("signup")}>
                   Sign up
                 </Button>
               </div>
             ) : (
-              <div>
-                Already have an account?{" "}
+              <div className="space-x-1">
+                <span>Already have an account?</span>
                 <Button variant="link" className="px-0" onClick={() => setMode("signin")}>
                   Sign in
                 </Button>
@@ -36,4 +38,3 @@ export function AuthPage() {
     </div>
   )
 }
-

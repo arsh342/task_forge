@@ -1,7 +1,6 @@
-import { Menu, Bell, Search, Settings, Users, HelpCircle } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Link } from '@/components/ui/link';
 
 interface NavbarProps {
   onMenuClick: () => void;
@@ -33,48 +31,10 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         </Button>
 
         <div className="flex-1 flex items-center gap-4 ml-4">
-          <form className="flex-1 max-w-lg">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-neutral-500" />
-              <Input
-                placeholder="Search tasks..."
-                className="pl-8 neubrutalism-sm neubrutalism-hover"
-              />
-            </div>
-          </form>
+          <h1 className="text-lg font-bold">Task Forge</h1>
         </div>
 
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hover:bg-neutral-100 relative"
-          >
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-2 right-2 h-2 w-2 bg-red-600 rounded-full animate-pulse" />
-          </Button>
-
-          <Link
-            href="/teams"
-            className="hover:bg-neutral-100 p-2 rounded-lg transition-colors"
-          >
-            <Users className="h-5 w-5" />
-          </Link>
-
-          <Link
-            href="/settings"
-            className="hover:bg-neutral-100 p-2 rounded-lg transition-colors"
-          >
-            <Settings className="h-5 w-5" />
-          </Link>
-
-          <Link
-            href="/help"
-            className="hover:bg-neutral-100 p-2 rounded-lg transition-colors"
-          >
-            <HelpCircle className="h-5 w-5" />
-          </Link>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -96,7 +56,6 @@ export function Navbar({ onMenuClick }: NavbarProps) {
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">Settings</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={signOut} className="cursor-pointer text-red-600">
                 Sign out
