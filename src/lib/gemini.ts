@@ -30,4 +30,3 @@ export async function* generateStreamingResponse(prompt: string) {
     throw error
   }
 }
-

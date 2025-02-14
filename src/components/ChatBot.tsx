@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect, useRef } from "react"
 import type { Task } from "@/types/task"
 import { Card, CardContent } from "@/components/ui/card"
@@ -7,10 +5,11 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { generateStreamingResponse } from "@/lib/gemini"
-import { Send } from "lucide-react"
+import { Send, Bot } from "lucide-react"
 import { collection, query, where, onSnapshot } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { useAuth } from "@/hooks/useAuth"
+import { cn } from "@/lib/utils"
 
 interface Message {
   role: "user" | "assistant"
@@ -30,6 +29,7 @@ export function ChatBot() {
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (!user) return
@@ -51,7 +51,7 @@ export function ChatBot() {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
     }
-  }, [scrollAreaRef.current]) //Fixed unnecessary dependency
+  }, [messages])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -119,6 +119,7 @@ export function ChatBot() {
       ])
     } finally {
       setLoading(false)
+      inputRef.current?.focus()
     }
   }
 
@@ -128,20 +129,37 @@ export function ChatBot() {
         <ScrollArea className="flex-1 pr-4" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.map((message, index) => (
-              <div key={index} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div
+                key={index}
+                className={cn("flex items-start gap-2", message.role === "user" ? "justify-end" : "justify-start")}
+              >
+                {message.role === "assistant" && (
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border-2 border-black">
+                    <Bot className="w-4 h-4" />
+                  </div>
+                )}
                 <div
-                  className={`max-w-[85%] sm:max-w-[80%] rounded-lg p-3 border-2 border-black ${
+                  className={cn(
+                    "max-w-[85%] sm:max-w-[80%] rounded-lg p-3 border-2 border-black",
                     message.role === "user"
                       ? "bg-[#FFD700] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                       : "bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                  }`}
+                  )}
                 >
                   <div className="whitespace-pre-wrap break-words">{message.content}</div>
                 </div>
+                {message.role === "user" && (
+                  <div className="w-8 h-8 rounded-full bg-[#FFD700] flex items-center justify-center border-2 border-black">
+                    {user?.email?.substring(0, 2).toUpperCase()}
+                  </div>
+                )}
               </div>
             ))}
             {loading && (
-              <div className="flex justify-start">
+              <div className="flex justify-start items-start gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border-2 border-black">
+                  <Bot className="w-4 h-4" />
+                </div>
                 <div className="max-w-[85%] sm:max-w-[80%] rounded-lg p-3 border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-black rounded-full animate-bounce" />
@@ -156,6 +174,7 @@ export function ChatBot() {
 
         <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
           <Input
+            ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask me anything..."
@@ -174,4 +193,3 @@ export function ChatBot() {
     </Card>
   )
 }
-

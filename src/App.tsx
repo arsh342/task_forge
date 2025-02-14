@@ -16,7 +16,6 @@ function App() {
         // User is signed in
       }
     })
-
     return () => unsubscribe()
   }, [])
 

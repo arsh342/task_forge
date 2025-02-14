@@ -4,11 +4,7 @@ import {
   LayoutDashboard,
   Calendar as CalendarIcon,
   MessageSquareText,
-  Users,
-  Settings,
-  HelpCircle,
 } from 'lucide-react';
-import { Link } from '@/components/ui/link';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -25,7 +21,6 @@ export function Sidebar({ isOpen, currentView, setView }: SidebarProps) {
       )}
     >
       <div className="flex h-16 items-center border-b-4 border-black px-6">
-        <h1 className="text-2xl font-black gradient-text">Task Manager</h1>
       </div>
 
       <div className="space-y-4 py-4">
@@ -64,32 +59,6 @@ export function Sidebar({ isOpen, currentView, setView }: SidebarProps) {
               <MessageSquareText className="mr-2 h-5 w-5" />
               AI Assistant
             </Button>
-          </div>
-        </div>
-        <div className="px-3 py-2">
-          <h2 className="mb-2 px-4 text-lg font-semibold">Settings</h2>
-          <div className="space-y-2">
-            <Link
-              href="/teams"
-              className="flex w-full items-center p-2 text-lg font-semibold neubrutalism-sm neubrutalism-hover rounded-lg"
-            >
-              <Users className="mr-2 h-5 w-5" />
-              Team
-            </Link>
-            <Link
-              href="/settings"
-              className="flex w-full items-center p-2 text-lg font-semibold neubrutalism-sm neubrutalism-hover rounded-lg"
-            >
-              <Settings className="mr-2 h-5 w-5" />
-              Settings
-            </Link>
-            <Link
-              href="/help"
-              className="flex w-full items-center p-2 text-lg font-semibold neubrutalism-sm neubrutalism-hover rounded-lg"
-            >
-              <HelpCircle className="mr-2 h-5 w-5" />
-              Help
-            </Link>
           </div>
         </div>
       </div>

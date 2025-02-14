@@ -10,6 +10,7 @@ interface TaskColumnProps {
   onTouchEnd: () => void;
 }
 
+// TaskColumn.tsx
 export function TaskColumn({ column, onTouchStart, onTouchMove, onTouchEnd }: TaskColumnProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
@@ -38,7 +39,9 @@ export function TaskColumn({ column, onTouchStart, onTouchMove, onTouchEnd }: Ta
     <div
       ref={setNodeRef}
       style={style}
-      className={`w-80 rounded-lg border-2 border-black ${getBgColor(column.id)} p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+      className={`w-[320px] min-w-[320px] rounded-lg border-2 border-black ${getBgColor(
+        column.id
+      )} p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
       {...attributes}
       {...listeners}
     >
@@ -52,6 +55,7 @@ export function TaskColumn({ column, onTouchStart, onTouchMove, onTouchEnd }: Ta
         {column.tasks.map((task) => (
           <div
             key={task.id}
+            className="w-full"
             onTouchStart={(e) => onTouchStart(e, task)}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}

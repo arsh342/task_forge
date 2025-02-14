@@ -1,12 +1,9 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { CalendarIcon, Trash2, Bell, ChevronLeft, ChevronRight } from "lucide-react"
 import {
   format,
   isToday,
   isTomorrow,
-  addDays,
   isPast,
   startOfMonth,
   endOfMonth,
@@ -14,6 +11,8 @@ import {
   isSameMonth,
   startOfWeek,
   endOfWeek,
+  subMonths,
+  addMonths,
 } from "date-fns"
 import type { Task } from "@/types/task"
 import { Card, CardContent } from "@/components/ui/card"
@@ -44,16 +43,15 @@ export function Calendar() {
       })) as Task[]
       setTasks(tasks)
 
-      // Check for upcoming tasks
-      // const today = new Date()
-      // const tomorrow = addDays(today, 1)
-
       tasks.forEach((task) => {
         const dueDate = new Date(task.dueDate)
+        const now = new Date()
+        const timeDiff = dueDate.getTime() - now.getTime()
+        const hoursDiff = timeDiff / (1000 * 60 * 60)
 
-        if (isToday(dueDate) || isTomorrow(dueDate)) {
+        if ((isToday(dueDate) && hoursDiff <= 2) || isTomorrow(dueDate)) {
           toast({
-            title: `Task Due ${isToday(dueDate) ? "Today" : "Tomorrow"}`,
+            title: `Task Due ${isToday(dueDate) ? "in " + Math.ceil(hoursDiff) + " hours" : "Tomorrow"}`,
             description: task.title,
             duration: 5000,
           })
@@ -94,18 +92,31 @@ export function Calendar() {
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
   const daysInMonth = getDaysInMonth()
 
+  const handlePreviousMonth = () => setCurrentMonth((prev) => subMonths(prev, 1))
+  const handleNextMonth = () => setCurrentMonth((prev) => addMonths(prev, 1))
+  const handleToday = () => {
+    setCurrentMonth(new Date())
+    setSelectedDate(new Date())
+  }
+
   return (
     <div className="container mx-auto p-4">
       <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <CardContent className="p-6">
-          {/* Calendar Header */}
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">{format(currentMonth, "MMMM yyyy")}</h2>
             <div className="flex gap-2">
               <Button
                 variant="outline"
+                onClick={handleToday}
+                className="border-2 border-black"
+              >
+                Today
+              </Button>
+              <Button
+                variant="outline"
                 size="icon"
-                onClick={() => setCurrentMonth((prevMonth) => addDays(prevMonth, -30))}
+                onClick={handlePreviousMonth}
                 className="border-2 border-black"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -113,7 +124,7 @@ export function Calendar() {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => setCurrentMonth((prevMonth) => addDays(prevMonth, 30))}
+                onClick={handleNextMonth}
                 className="border-2 border-black"
               >
                 <ChevronRight className="h-4 w-4" />
@@ -121,39 +132,45 @@ export function Calendar() {
             </div>
           </div>
 
-          {/* Calendar Grid */}
           <div className="grid grid-cols-7 gap-1">
-            {/* Day Headers */}
             {days.map((day) => (
               <div key={day} className="text-center font-semibold py-2">
                 {day}
               </div>
             ))}
 
-            {/* Calendar Days */}
             {daysInMonth.map((day) => {
               const dayTasks = getDayTasks(day)
               const isSelected = format(selectedDate, "yyyy-MM-dd") === format(day, "yyyy-MM-dd")
               const isCurrentMonth = isSameMonth(day, currentMonth)
               const isCurrentDay = isToday(day)
+              const hasOverdueTasks = dayTasks.some(
+                (task) => isPast(new Date(task.dueDate)) && task.status !== "completed"
+              )
 
               return (
                 <div
                   key={day.toString()}
                   className={cn(
-                    "min-h-[100px] p-1 border rounded-lg transition-all cursor-pointer",
-                    isSelected ? "border-primary bg-primary/10" : "border-gray-200",
-                    isCurrentDay && "bg-accent/20",
+                    "min-h-[120px] p-2 border-2 rounded-lg transition-all cursor-pointer hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+                    isSelected ? "border-primary bg-primary/5" : "border-gray-200",
+                    isCurrentDay && "bg-yellow-50",
                     !isCurrentMonth && "opacity-50",
+                    hasOverdueTasks && "bg-red-50"
                   )}
                   onClick={() => setSelectedDate(day)}
                 >
                   <div className="flex justify-between items-start">
-                    <span className={cn("font-semibold text-sm", isCurrentDay && "text-primary")}>
+                    <span
+                      className={cn(
+                        "font-semibold text-sm px-2 py-1 rounded-full",
+                        isCurrentDay && "bg-yellow-200"
+                      )}
+                    >
                       {format(day, "d")}
                     </span>
                     {dayTasks.length > 0 && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="border-2 border-black">
                         {dayTasks.length}
                       </Badge>
                     )}
@@ -163,25 +180,29 @@ export function Calendar() {
                       <div
                         key={task.id}
                         className={cn(
-                          "text-xs p-1 rounded truncate",
+                          "text-xs p-1.5 rounded-md border border-black/10",
                           task.priority === "high"
                             ? "bg-red-100"
                             : task.priority === "medium"
-                              ? "bg-yellow-100"
-                              : "bg-green-100",
+                            ? "bg-yellow-100"
+                            : "bg-green-100"
                         )}
                       >
-                        {task.title}
+                        <div className="flex items-center gap-1">
+                          <span className="truncate flex-1">{task.title}</span>
+                          <span className="text-[10px] tabular-nums">{task.startTime}</span>
+                        </div>
                       </div>
                     ))}
-                    {dayTasks.length > 3 && <div className="text-xs text-gray-500">+{dayTasks.length - 3} more</div>}
+                    {dayTasks.length > 3 && (
+                      <div className="text-xs text-gray-500 pl-1">+{dayTasks.length - 3} more</div>
+                    )}
                   </div>
                 </div>
               )
             })}
           </div>
 
-          {/* Selected Day Tasks */}
           {selectedDate && (
             <div className="mt-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -196,7 +217,7 @@ export function Calendar() {
                       "flex items-center justify-between p-3 border-2 border-black rounded-lg",
                       "hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
                       "transition-all",
-                      isPast(new Date(task.dueDate)) && task.status !== "completed" ? "bg-red-50" : "bg-white",
+                      isPast(new Date(task.dueDate)) && task.status !== "completed" ? "bg-red-50" : "bg-white"
                     )}
                   >
                     <div className="flex-1">
@@ -219,8 +240,8 @@ export function Calendar() {
                           task.priority === "high"
                             ? "destructive"
                             : task.priority === "medium"
-                              ? "default"
-                              : "secondary"
+                            ? "default"
+                            : "secondary"
                         }
                         className="border-2 border-black"
                       >
@@ -248,4 +269,3 @@ export function Calendar() {
     </div>
   )
 }
-
