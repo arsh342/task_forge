@@ -22,8 +22,8 @@ Task Forge is a powerful and intuitive task management tool built with **Vite**,
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-username/taskforge.git
-   cd taskforge
+   git clone https://github.com/arsh342/task_forge.git
+   cd task_forge
    ```
 2. Install dependencies:
    ```sh
@@ -65,7 +65,7 @@ npm run build
 Then deploy using:
 
 ```sh
-vercel deploy  # For Vercel
+vercel deploy
 ```
 
 
@@ -75,6 +75,6 @@ This project is open-source and available under the **MIT License**.
 
 ---
 
-🔗 **Live Demo:** [Task Forge](https://your-deployed-site.com)  
-📧 **Contact:** your-email@example.com
+🔗 **Live Demo:** [Task Forge](https://taskforgeio.vercel.app/)  
+📧 **Contact:** arshth134@example.com
 
